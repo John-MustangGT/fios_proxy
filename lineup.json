@@ -1,0 +1,607 @@
+{
+  "tuners": [
+    {
+      "name": "tuner1", 
+      "device_ip": "192.168.1.105", 
+      "encoder_rtsp": "rtsp://172.17.4.229:8554/main/av",
+      "encoder_model": "ZowieBox_hdmi"
+    },
+    {
+      "name": "tuner2", 
+       "device_ip": "192.168.1.107", 
+        "encoder_rtsp": "rtsp://172.17.4.160:554/main/av",
+	"encoder_model": "ZowieBox_hdmi"
+    }
+  ],
+  "device_ip": "192.168.1.105",
+  "listen_host": "172.17.4.234",
+  "listen_port": 5590,
+  "settle_seconds": 2,
+  "channels": [
+    {
+      "number": "502",
+      "name": "WGBH (PBS)",
+      "stationId": "28055"
+    },
+    {
+      "number": "503",
+      "name": "My Network TV (WSBK)",
+      "stationId": "32723"
+    },
+    {
+      "number": "504",
+      "name": "WBZ (CBS)",
+      "stationId": "20431"
+    },
+    {
+      "number": "505",
+      "name": "WCVB (ABC)",
+      "stationId": "19596"
+    },
+    {
+      "number": "507",
+      "name": "WHDH News 7",
+      "stationId": "20358"
+    },
+    {
+      "number": "508",
+      "name": "WFXT (FOX)",
+      "stationId": "20362"
+    },
+    {
+      "number": "509",
+      "name": "WMUR (ABC)",
+      "stationId": "19604"
+    },
+    {
+      "number": "510",
+      "name": "WBTS NBC 10",
+      "stationId": "91446"
+    },
+    {
+      "number": "511",
+      "name": "WENH (PBS)",
+      "stationId": "25002"
+    },
+    {
+      "number": "512",
+      "name": "WLVI (CW)",
+      "stationId": "32633"
+    },
+    {
+      "number": "513",
+      "name": "NECN HD",
+      "stationId": "66278"
+    },
+    {
+      "number": "514",
+      "name": "WNEU (Telemundo)",
+      "stationId": "34012"
+    },
+    {
+      "number": "515",
+      "name": "WBPX (ION)",
+      "stationId": "54883"
+    },
+    {
+      "number": "518",
+      "name": "WSBE Ocean State (PBS)",
+      "stationId": "86984"
+    },
+    {
+      "number": "521",
+      "name": "WUTF (UniMas)",
+      "stationId": "44506"
+    },
+    {
+      "number": "523",
+      "name": "WMFP SonLife",
+      "stationId": "50380"
+    },
+    {
+      "number": "527",
+      "name": "WUNI (Univision)",
+      "stationId": "19599"
+    },
+    {
+      "number": "544",
+      "name": "WGBX 44 (PBS)",
+      "stationId": "31719"
+    },
+    {
+      "number": "546",
+      "name": "WWDP ROAR TV",
+      "stationId": "43317"
+    },
+    {
+      "number": "550",
+      "name": "USA Network HD",
+      "stationId": "58452"
+    },
+    {
+      "number": "551",
+      "name": "TNT HD",
+      "stationId": "42642"
+    },
+    {
+      "number": "552",
+      "name": "TBS HD",
+      "stationId": "58515"
+    },
+    {
+      "number": "554",
+      "name": "Paramount Network HD",
+      "stationId": "59186"
+    },
+    {
+      "number": "570",
+      "name": "ESPN HD",
+      "stationId": "32645"
+    },
+    {
+      "number": "571",
+      "name": "ACC Network HD",
+      "stationId": "111871"
+    },
+    {
+      "number": "573",
+      "name": "ESPNU HD",
+      "stationId": "60696"
+    },
+    {
+      "number": "574",
+      "name": "ESPN2 HD",
+      "stationId": "45507"
+    },
+    {
+      "number": "575",
+      "name": "SEC Network HD",
+      "stationId": "89714"
+    },
+    {
+      "number": "576",
+      "name": "NESN HD",
+      "stationId": "35038"
+    },
+    {
+      "number": "577",
+      "name": "NBC Sports Boston HD",
+      "stationId": "49198"
+    },
+    {
+      "number": "578",
+      "name": "NESN Plus HD",
+      "stationId": "63516"
+    },
+    {
+      "number": "584",
+      "name": "Fox Sports 2 HD",
+      "stationId": "59305"
+    },
+    {
+      "number": "588",
+      "name": "NFL Network HD",
+      "stationId": "45399"
+    },
+    {
+      "number": "592",
+      "name": "Tennis Channel HD",
+      "stationId": "60316"
+    },
+    {
+      "number": "596",
+      "name": "beIN Sports HD",
+      "stationId": "76950"
+    },
+    {
+      "number": "600",
+      "name": "CNN HD",
+      "stationId": "58646"
+    },
+    {
+      "number": "602",
+      "name": "CNBC HD",
+      "stationId": "58780"
+    },
+    {
+      "number": "603",
+      "name": "MS NOW HD",
+      "stationId": "64241"
+    },
+    {
+      "number": "604",
+      "name": "NewsNation HD",
+      "stationId": "91096"
+    },
+    {
+      "number": "605",
+      "name": "Bloomberg TV HD",
+      "stationId": "71799"
+    },
+    {
+      "number": "611",
+      "name": "The Weather Channel HD",
+      "stationId": "58812"
+    },
+    {
+      "number": "616",
+      "name": "Newsmax TV HD",
+      "stationId": "97163"
+    },
+    {
+      "number": "619",
+      "name": "AccuWeather HD",
+      "stationId": "97301"
+    },
+    {
+      "number": "620",
+      "name": "Discovery Channel HD",
+      "stationId": "56905"
+    },
+    {
+      "number": "622",
+      "name": "Science Channel HD",
+      "stationId": "57390"
+    },
+    {
+      "number": "623",
+      "name": "Investigation Discovery HD",
+      "stationId": "65342"
+    },
+    {
+      "number": "628",
+      "name": "History HD",
+      "stationId": "57708"
+    },
+    {
+      "number": "629",
+      "name": "FYI HD",
+      "stationId": "58988"
+    },
+    {
+      "number": "630",
+      "name": "Animal Planet HD",
+      "stationId": "57394"
+    },
+    {
+      "number": "631",
+      "name": "MotorTrend HD",
+      "stationId": "31046"
+    },
+    {
+      "number": "635",
+      "name": "Great American Faith & Living HD",
+      "stationId": "90858"
+    },
+    {
+      "number": "639",
+      "name": "TLC HD",
+      "stationId": "57391"
+    },
+    {
+      "number": "640",
+      "name": "Lifetime HD",
+      "stationId": "60150"
+    },
+    {
+      "number": "641",
+      "name": "LMN HD",
+      "stationId": "55887"
+    },
+    {
+      "number": "644",
+      "name": "Oxygen HD",
+      "stationId": "70522"
+    },
+    {
+      "number": "649",
+      "name": "WE tv HD",
+      "stationId": "59296"
+    },
+    {
+      "number": "650",
+      "name": "QVC HD",
+      "stationId": "60222"
+    },
+    {
+      "number": "651",
+      "name": "HSN HD",
+      "stationId": "62077"
+    },
+    {
+      "number": "652",
+      "name": "Jewelry TV HD",
+      "stationId": "65556"
+    },
+    {
+      "number": "653",
+      "name": "QVC2 HD",
+      "stationId": "82696"
+    },
+    {
+      "number": "654",
+      "name": "HSN2 HD",
+      "stationId": "99450"
+    },
+    {
+      "number": "656",
+      "name": "QVC3 HD",
+      "stationId": "102337"
+    },
+    {
+      "number": "658",
+      "name": "Gem Shopping Network HD",
+      "stationId": "109264"
+    },
+    {
+      "number": "659",
+      "name": "ShopLC HD",
+      "stationId": "93564"
+    },
+    {
+      "number": "664",
+      "name": "Food Network HD",
+      "stationId": "50747"
+    },
+    {
+      "number": "665",
+      "name": "HGTV HD",
+      "stationId": "49788"
+    },
+    {
+      "number": "667",
+      "name": "Magnolia Network HD",
+      "stationId": "67375"
+    },
+    {
+      "number": "670",
+      "name": "Travel Channel HD",
+      "stationId": "59303"
+    },
+    {
+      "number": "678",
+      "name": "Law & Crime Network HD",
+      "stationId": "109553"
+    },
+    {
+      "number": "680",
+      "name": "SYFY HD",
+      "stationId": "58623"
+    },
+    {
+      "number": "681",
+      "name": "A&E HD",
+      "stationId": "51529"
+    },
+    {
+      "number": "683",
+      "name": "truTV HD",
+      "stationId": "64490"
+    },
+    {
+      "number": "684",
+      "name": "Game Show Network HD",
+      "stationId": "68827"
+    },
+    {
+      "number": "685",
+      "name": "Bravo HD",
+      "stationId": "58625"
+    },
+    {
+      "number": "688",
+      "name": "Ovation HD",
+      "stationId": "69061"
+    },
+    {
+      "number": "689",
+      "name": "BBC America HD",
+      "stationId": "64492"
+    },
+    {
+      "number": "690",
+      "name": "Comedy Central HD",
+      "stationId": "62420"
+    },
+    {
+      "number": "692",
+      "name": "REELZ HD",
+      "stationId": "68385"
+    },
+    {
+      "number": "694",
+      "name": "Pop HD",
+      "stationId": "68796"
+    },
+    {
+      "number": "695",
+      "name": "Comedy.TV HD",
+      "stationId": "82470"
+    },
+    {
+      "number": "696",
+      "name": "E! HD",
+      "stationId": "61812"
+    },
+    {
+      "number": "697",
+      "name": "VICE TV HD",
+      "stationId": "65732"
+    },
+    {
+      "number": "699",
+      "name": "Freeform HD",
+      "stationId": "59615"
+    },
+    {
+      "number": "710",
+      "name": "MTV HD",
+      "stationId": "60964"
+    },
+    {
+      "number": "711",
+      "name": "MTV2 HD",
+      "stationId": "75077"
+    },
+    {
+      "number": "717",
+      "name": "VH1 HD",
+      "stationId": "60046"
+    },
+    {
+      "number": "720",
+      "name": "BET Her HD",
+      "stationId": "63220"
+    },
+    {
+      "number": "721",
+      "name": "CMT HD",
+      "stationId": "59440"
+    },
+    {
+      "number": "731",
+      "name": "AMC HD",
+      "stationId": "59337"
+    },
+    {
+      "number": "732",
+      "name": "FXM HD",
+      "stationId": "70253"
+    },
+    {
+      "number": "734",
+      "name": "IFC HD",
+      "stationId": "59444"
+    },
+    {
+      "number": "735",
+      "name": "SundanceTV HD",
+      "stationId": "71280"
+    },
+    {
+      "number": "737",
+      "name": "Hallmark Family HD",
+      "stationId": "105723"
+    },
+    {
+      "number": "738",
+      "name": "UP HD",
+      "stationId": "66143"
+    },
+    {
+      "number": "739",
+      "name": "Hallmark Mystery HD",
+      "stationId": "46710"
+    },
+    {
+      "number": "740",
+      "name": "Hallmark Channel HD",
+      "stationId": "66268"
+    },
+    {
+      "number": "741",
+      "name": "TV Land HD",
+      "stationId": "73541"
+    },
+    {
+      "number": "746",
+      "name": "Cowboy Channel HD",
+      "stationId": "80597"
+    },
+    {
+      "number": "752",
+      "name": "Nickelodeon HD",
+      "stationId": "59432"
+    },
+    {
+      "number": "754",
+      "name": "NickToons HD",
+      "stationId": "82654"
+    },
+    {
+      "number": "755",
+      "name": "TeenNick HD",
+      "stationId": "97047"
+    },
+    {
+      "number": "756",
+      "name": "Nick Jr. HD",
+      "stationId": "82649"
+    },
+    {
+      "number": "757",
+      "name": "Cartoon Network HD",
+      "stationId": "60048"
+    },
+    {
+      "number": "770",
+      "name": "BET HD",
+      "stationId": "63236"
+    },
+    {
+      "number": "771",
+      "name": "TV One HD",
+      "stationId": "61960"
+    },
+    {
+      "number": "772",
+      "name": "ASPiRE HD",
+      "stationId": "97409"
+    },
+    {
+      "number": "773",
+      "name": "Cleo TV HD",
+      "stationId": "110289"
+    },
+    {
+      "number": "780",
+      "name": "Disney Channel HD",
+      "stationId": "59684"
+    },
+    {
+      "number": "781",
+      "name": "Disney XD HD",
+      "stationId": "60006"
+    },
+    {
+      "number": "786",
+      "name": "INSP HD",
+      "stationId": "82773"
+    },
+    {
+      "number": "787",
+      "name": "Impact Network HD",
+      "stationId": "136901"
+    },
+    {
+      "number": "793",
+      "name": "Daystar HD",
+      "stationId": "87001"
+    },
+    {
+      "number": "795",
+      "name": "PTL TV HD",
+      "stationId": "115357"
+    },
+    {
+      "number": "797",
+      "name": "SonLife HD",
+      "stationId": "91314"
+    },
+    {
+      "number": "798",
+      "name": "JBS HD",
+      "stationId": "80834"
+    },
+    {
+      "number": "815",
+      "name": "FanDuel TV HD",
+      "stationId": "21345"
+    },
+    {
+      "number": "830",
+      "name": "Big Ten Network HD",
+      "stationId": "61143"
+    }
+  ]
+}

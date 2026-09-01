@@ -1,0 +1,15 @@
+[Unit]
+Description=Fios TV+ / ZowieBox proxy for Channels DVR
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root
+ExecStart=/usr/bin/python3 /root/fios_proxy.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
