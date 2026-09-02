@@ -129,7 +129,14 @@ def keepawake(tuner, state):
         running = _keepawake_stop_events.get(tuner)
         if state == "on":
             if running is None:
-                subprocess.run(["adb", "connect", f"{device_ip}:5555"], check=False, capture_output=True)
+                connect = subprocess.run(
+                    ["adb", "connect", f"{device_ip}:5555"], check=False, capture_output=True, text=True,
+                )
+                connect_output = (connect.stdout + connect.stderr).strip()
+                if ("connected to" not in connect_output.lower()
+                        and "already connected" not in connect_output.lower()):
+                    return jsonify({"error": f"could not reach {tuner}: "
+                                              f"{connect_output or 'no response'}"}), 502
                 subprocess.run(
                     ["adb", "-s", f"{device_ip}:5555", "shell", "input", "keyevent", "KEYCODE_WAKEUP"],
                     check=False,
@@ -261,11 +268,17 @@ def send_key(tuner, key):
         return jsonify({"error": f"unknown key {key}"}), 400
 
     device_ip = t["device_ip"]
-    subprocess.run(["adb", "connect", f"{device_ip}:5555"], check=False, capture_output=True)
-    subprocess.run(
-        ["adb", "-s", f"{device_ip}:5555", "shell", "input", "keyevent", keycode],
-        check=False,
+    connect = subprocess.run(
+        ["adb", "connect", f"{device_ip}:5555"], check=False, capture_output=True, text=True,
     )
+    result = subprocess.run(
+        ["adb", "-s", f"{device_ip}:5555", "shell", "input", "keyevent", keycode],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        error = (result.stderr.strip() or (connect.stdout + connect.stderr).strip()
+                 or "adb command failed")
+        return jsonify({"error": f"could not reach {tuner}: {error}"}), 502
     return jsonify({"sent": keycode})
 
 
@@ -379,13 +392,25 @@ async function refreshInfo(n) {{
 }}
 
 async function key(n, k) {{
-  await fetch(`/status/${{n}}/key/${{k}}`, {{ method: 'POST' }});
+  try {{
+    const r = await fetch(`/status/${{n}}/key/${{k}}`, {{ method: 'POST' }});
+    if (!r.ok) {{
+      const d = await r.json().catch(() => ({{}}));
+      alert(`Failed to send ${{k}} to ${{n}}: ${{d.error || r.status}}`);
+    }}
+  }} catch (e) {{
+    alert(`Failed to send ${{k}} to ${{n}}: ${{e}}`);
+  }}
 }}
 
 async function toggleKeepAwake(n) {{
   const btn = document.getElementById(`keepawake-${{n}}`);
   const turningOn = btn.dataset.state !== 'on';
-  await fetch(`/status/${{n}}/keepawake/${{turningOn ? 'on' : 'off'}}`, {{ method: 'POST' }});
+  const r = await fetch(`/status/${{n}}/keepawake/${{turningOn ? 'on' : 'off'}}`, {{ method: 'POST' }});
+  if (!r.ok) {{
+    const d = await r.json().catch(() => ({{}}));
+    alert(`Failed to toggle keep-awake for ${{n}}: ${{d.error || r.status}}`);
+  }}
   refreshInfo(n);
 }}
 
