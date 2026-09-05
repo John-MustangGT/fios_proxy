@@ -2,7 +2,7 @@
   "tuners": [
     {
       "name": "tuner1", 
-      "device_ip": "192.168.1.105", 
+      "device_ip": "192.168.1.100", 
       "encoder_rtsp": "rtsp://172.17.4.229:8554/main/av",
       "encoder_model": "ZowieBox_hdmi"
     },
