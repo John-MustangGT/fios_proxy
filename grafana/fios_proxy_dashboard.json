@@ -1,0 +1,547 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "Prometheus instance scraping fios_proxy's /metrics endpoint",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__requires": [
+    { "type": "grafana", "id": "grafana", "name": "Grafana", "version": "10.0.0" },
+    { "type": "datasource", "id": "prometheus", "name": "Prometheus", "version": "1.0.0" },
+    { "type": "panel", "id": "stat", "name": "Stat", "version": "" },
+    { "type": "panel", "id": "table", "name": "Table", "version": "" },
+    { "type": "panel", "id": "timeseries", "name": "Time series", "version": "" },
+    { "type": "panel", "id": "state-timeline", "name": "State timeline", "version": "" },
+    { "type": "panel", "id": "row", "name": "Row", "version": "" }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "type": "stat",
+      "id": 1,
+      "title": "Proxy Up",
+      "description": "fios_proxy_up - whether lineup.json loaded successfully.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_up", "legendFormat": "up", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "DOWN" }, "1": { "text": "UP" } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto"
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 }
+    },
+    {
+      "type": "stat",
+      "id": 2,
+      "title": "Channels Configured",
+      "description": "fios_proxy_channels - number of channels in lineup.json.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_channels", "legendFormat": "channels", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "none", "color": { "mode": "fixed", "fixedColor": "blue" } },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto"
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 }
+    },
+    {
+      "type": "stat",
+      "id": 3,
+      "title": "Tuners Configured",
+      "description": "fios_proxy_tuners - number of tuners in lineup.json.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuners", "legendFormat": "tuners", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "none", "color": { "mode": "fixed", "fixedColor": "blue" } },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto"
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 }
+    },
+    {
+      "type": "stat",
+      "id": 4,
+      "title": "Tuners Busy Now",
+      "description": "fios_proxy_tuners_busy - tuners currently reserved by a /channel request.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuners_busy", "legendFormat": "busy", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 1 } ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto"
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 }
+    },
+    {
+      "type": "table",
+      "id": 5,
+      "title": "Tuner Info",
+      "description": "fios_proxy_tuner_info - static config for each tuner (device IP, encoder host/model).",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        {
+          "expr": "fios_proxy_tuner_info{tuner=~\"$tuner\"}",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": { "Time": true, "Value": true, "__name__": true, "job": true, "instance": true },
+            "indexByName": {},
+            "renameByName": {
+              "tuner": "Tuner",
+              "device_ip": "Fios Box IP",
+              "encoder_host": "Encoder Host",
+              "encoder_model": "Encoder Model"
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": { "show": false, "reducer": ["sum"] }
+      },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 4 }
+    },
+    {
+      "type": "row",
+      "id": 6,
+      "title": "Tuner: $tuner",
+      "repeat": "tuner",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 10 }
+    },
+    {
+      "type": "stat",
+      "id": 7,
+      "title": "ADB Reachable",
+      "description": "fios_proxy_tuner_adb_reachable - `adb connect` to this tuner's Fios box (port 5555) succeeded on the last scrape.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuner_adb_reachable{tuner=\"$tuner\"}", "legendFormat": "{{tuner}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [ { "type": "value", "options": { "0": { "text": "No" }, "1": { "text": "Yes" } } } ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto"
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 11 }
+    },
+    {
+      "type": "stat",
+      "id": 8,
+      "title": "Encoder Reachable",
+      "description": "fios_proxy_tuner_encoder_reachable - TCP connect to this tuner's encoder RTSP port succeeded on the last scrape.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuner_encoder_reachable{tuner=\"$tuner\"}", "legendFormat": "{{tuner}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [ { "type": "value", "options": { "0": { "text": "No" }, "1": { "text": "Yes" } } } ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto"
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 11 }
+    },
+    {
+      "type": "stat",
+      "id": 9,
+      "title": "Streaming Now",
+      "description": "fios_proxy_tuner_streaming - whether this tuner is actively streaming right now.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuner_streaming{tuner=\"$tuner\"}", "legendFormat": "{{tuner}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [ { "type": "value", "options": { "0": { "text": "Idle" }, "1": { "text": "Streaming" } } } ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 1 } ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto"
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 11 }
+    },
+    {
+      "type": "stat",
+      "id": 10,
+      "title": "Last Tuned",
+      "description": "fios_proxy_tuner_last_tuned_seconds_ago - time since this tuner last handled a /channel request. Blank if never tuned since fios_proxy started.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuner_last_tuned_seconds_ago{tuner=\"$tuner\"}", "legendFormat": "{{tuner}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "s", "color": { "mode": "fixed", "fixedColor": "blue" } },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto"
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 11 }
+    },
+    {
+      "type": "stat",
+      "id": 11,
+      "title": "Total Stream Time",
+      "description": "fios_proxy_tuner_stream_seconds_total - cumulative streaming time since fios_proxy last restarted, including any stream in progress.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuner_stream_seconds_total{tuner=\"$tuner\"}", "legendFormat": "{{tuner}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "s", "color": { "mode": "fixed", "fixedColor": "blue" } },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto"
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 11 }
+    },
+    {
+      "type": "stat",
+      "id": 12,
+      "title": "Stream Errors",
+      "description": "fios_proxy_tuner_stream_errors_total - streams on this tuner that ended having sent zero bytes. Check the server log around the time of an increase for the ffmpeg error.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuner_stream_errors_total{tuner=\"$tuner\"}", "legendFormat": "{{tuner}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto"
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 11 }
+    },
+    {
+      "type": "row",
+      "id": 13,
+      "title": "Historical Activity",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 }
+    },
+    {
+      "type": "state-timeline",
+      "id": 14,
+      "title": "Streaming Activity",
+      "description": "fios_proxy_tuner_streaming per tuner over time.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuner_streaming{tuner=~\"$tuner\"}", "legendFormat": "{{tuner}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [ { "type": "value", "options": { "0": { "text": "Idle", "color": "dark-green" }, "1": { "text": "Streaming", "color": "orange" } } } ],
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "dark-green", "value": null } ] }
+        },
+        "overrides": []
+      },
+      "options": {
+        "mergeValues": true,
+        "showValue": "never",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "right" }
+      },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 16 }
+    },
+    {
+      "type": "state-timeline",
+      "id": 15,
+      "title": "ADB Reachability",
+      "description": "fios_proxy_tuner_adb_reachable per tuner over time.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuner_adb_reachable{tuner=~\"$tuner\"}", "legendFormat": "{{tuner}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [ { "type": "value", "options": { "0": { "text": "Unreachable", "color": "red" }, "1": { "text": "Reachable", "color": "dark-green" } } } ],
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "dark-green", "value": null } ] }
+        },
+        "overrides": []
+      },
+      "options": {
+        "mergeValues": true,
+        "showValue": "never",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "right" }
+      },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 22 }
+    },
+    {
+      "type": "state-timeline",
+      "id": 16,
+      "title": "Encoder Reachability",
+      "description": "fios_proxy_tuner_encoder_reachable per tuner over time.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuner_encoder_reachable{tuner=~\"$tuner\"}", "legendFormat": "{{tuner}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [ { "type": "value", "options": { "0": { "text": "Unreachable", "color": "red" }, "1": { "text": "Reachable", "color": "dark-green" } } } ],
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "dark-green", "value": null } ] }
+        },
+        "overrides": []
+      },
+      "options": {
+        "mergeValues": true,
+        "showValue": "never",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "right" }
+      },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 22 }
+    },
+    {
+      "type": "row",
+      "id": 17,
+      "title": "Usage Counters",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 28 }
+    },
+    {
+      "type": "timeseries",
+      "id": 18,
+      "title": "Cumulative Stream Time",
+      "description": "fios_proxy_tuner_stream_seconds_total per tuner. Resets when fios_proxy restarts.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuner_stream_seconds_total{tuner=~\"$tuner\"}", "legendFormat": "{{tuner}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": { "drawStyle": "line", "lineInterpolation": "stepAfter", "fillOpacity": 10, "spanNulls": true, "showPoints": "never" }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 29 }
+    },
+    {
+      "type": "timeseries",
+      "id": 19,
+      "title": "Tunes vs Streams Started",
+      "description": "fios_proxy_tuner_tunes_total and fios_proxy_tuner_streams_total per tuner. Both reset when fios_proxy restarts.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "fios_proxy_tuner_tunes_total{tuner=~\"$tuner\"}", "legendFormat": "{{tuner}} tunes", "refId": "A" },
+        { "expr": "fios_proxy_tuner_streams_total{tuner=~\"$tuner\"}", "legendFormat": "{{tuner}} streams", "refId": "B" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": { "drawStyle": "line", "lineInterpolation": "stepAfter", "fillOpacity": 10, "spanNulls": true, "showPoints": "never" }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 29 }
+    },
+    {
+      "type": "timeseries",
+      "id": 20,
+      "title": "Stream Errors (per interval)",
+      "description": "increase(fios_proxy_tuner_stream_errors_total) - zero-byte streams per tuner, bucketed. Any bar here means check the server log at that time.",
+      "datasource": "${DS_PROMETHEUS}",
+      "targets": [
+        { "expr": "increase(fios_proxy_tuner_stream_errors_total{tuner=~\"$tuner\"}[$__interval])", "legendFormat": "{{tuner}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": { "mode": "fixed", "fixedColor": "red" },
+          "custom": { "drawStyle": "bars", "fillOpacity": 60, "spanNulls": false, "showPoints": "never" }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 37 }
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["fios_proxy", "channels-dvr", "zowiebox"],
+  "templating": {
+    "list": [
+      {
+        "name": "tuner",
+        "type": "query",
+        "label": "Tuner",
+        "datasource": "${DS_PROMETHEUS}",
+        "query": { "query": "label_values(fios_proxy_tuner_info, tuner)", "refId": "tuner-variable" },
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "current": { "selected": true, "text": ["All"], "value": ["$__all"] },
+        "hide": 0,
+        "sort": 1
+      }
+    ]
+  },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Fios Proxy",
+  "description": "Health and usage for fios_proxy (Channels DVR / ZowieBox proxy): config status, per-tuner ADB/encoder reachability, streaming activity, and usage counters. Data source: fios_proxy's /metrics endpoint.",
+  "uid": "fios-proxy",
+  "version": 1,
+  "weekStart": ""
+}
