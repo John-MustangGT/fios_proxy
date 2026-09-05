@@ -9,6 +9,9 @@ Runs on localhost alongside Channels DVR. Serves two things:
   GET /status          - debug page: live snapshot, remote buttons, ADB/sleep
                           state, last-tuned channel, IP + forward/reverse DNS
                           for each device (see status.py)
+  GET /metrics          - Prometheus text-exposition metrics: proxy/tuner
+                          health, ADB/encoder reachability, streaming time
+                          (see metrics.py)
 
 Intentionally small and dependency-light (Flask only). Supports one or more
 identical {box, encoder} tuner pairs via tuner_pool.py - "any idle tuner
@@ -37,12 +40,14 @@ from pathlib import Path
 
 from flask import Flask, Response, abort
 
-from status import status_bp, mark_tuned, mark_stream_state
+from status import status_bp, mark_tuned, mark_stream_state, mark_stream_error
 from tuner_pool import acquire, release, NoIdleTuner
+from metrics import metrics_bp
 
 CONFIG_PATH = Path(__file__).parent / "lineup.json"
 app = Flask(__name__)
 app.register_blueprint(status_bp)
+app.register_blueprint(metrics_bp)
 
 # Displayed channel-number = this + the real Fios number (e.g. 603 -> 9603),
 # so this source's numbers can't collide with anything else in the Channels
@@ -352,6 +357,7 @@ def channel(number):
                         f"channel {number}: ffmpeg on tuner {tuner['name']} exited "
                         f"(rc={proc.returncode}) with zero bytes streamed:\n  {tail}"
                     )
+                    mark_stream_error(tuner["name"])
                 elif proc.returncode not in (0, None) and stderr_lines:
                     log_warning(
                         f"channel {number}: ffmpeg on tuner {tuner['name']} exited "

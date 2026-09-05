@@ -35,6 +35,13 @@ _state_lock = threading.Lock()
 LAST_TUNED = {}      # tuner_name -> {"channel": str, "at": epoch float}
 ACTIVE_STREAM = {}   # tuner_name -> bool
 
+# /metrics counters - all keyed by tuner_name, all mutated under _state_lock.
+TUNE_COUNT = {}            # total /channel requests served
+STREAM_COUNT = {}          # total streams started
+STREAM_SECONDS_TOTAL = {}  # cumulative seconds streamed (completed streams only)
+STREAM_ERROR_COUNT = {}    # streams that ended having sent zero bytes
+_stream_start = {}         # tuner_name -> epoch float, present iff a stream is in progress
+
 # A single KEYCODE_WAKEUP wakes the screen but doesn't reset whatever idle
 # timer the box uses to decide it's unattended - with nothing else going on
 # (no keepalive thread, since that only runs during an active /channel
@@ -48,11 +55,41 @@ _keepawake_stop_events = {}  # tuner_name -> threading.Event, present iff runnin
 def mark_tuned(tuner_name, channel):
     with _state_lock:
         LAST_TUNED[tuner_name] = {"channel": channel, "at": time.time()}
+        TUNE_COUNT[tuner_name] = TUNE_COUNT.get(tuner_name, 0) + 1
 
 
 def mark_stream_state(tuner_name, active):
+    """Also the source of truth for the streaming-time/streams-started
+    counters /metrics reports - see stream_seconds()."""
     with _state_lock:
         ACTIVE_STREAM[tuner_name] = active
+        if active:
+            _stream_start[tuner_name] = time.time()
+            STREAM_COUNT[tuner_name] = STREAM_COUNT.get(tuner_name, 0) + 1
+        else:
+            start = _stream_start.pop(tuner_name, None)
+            if start is not None:
+                STREAM_SECONDS_TOTAL[tuner_name] = (
+                    STREAM_SECONDS_TOTAL.get(tuner_name, 0.0) + (time.time() - start)
+                )
+
+
+def mark_stream_error(tuner_name):
+    """Called from fios_proxy.py when a stream ends having sent zero bytes
+    (see the ffmpeg stderr logging in /channel/<num>)."""
+    with _state_lock:
+        STREAM_ERROR_COUNT[tuner_name] = STREAM_ERROR_COUNT.get(tuner_name, 0) + 1
+
+
+def stream_seconds(tuner_name):
+    """Cumulative streaming time for a tuner, including any stream in
+    progress right now - what /metrics reports."""
+    with _state_lock:
+        total = STREAM_SECONDS_TOTAL.get(tuner_name, 0.0)
+        start = _stream_start.get(tuner_name)
+        if start is not None:
+            total += time.time() - start
+        return total
 
 
 def get_tuners(config):
