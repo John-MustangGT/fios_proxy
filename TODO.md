@@ -4,6 +4,28 @@ Working list of near-term and larger planned work. Smaller/completed
 decisions and investigation history live in `PROJECT_NOTES.md` — this file
 is just the actionable list.
 
+## Path to a releasable product (John's call on scope, 2026-09-23)
+
+Three things gate calling this releasable, in order — each is detailed in
+its own section below, this is just the sequencing:
+
+1. **Autotune / channel-capability probe script** (Tooling, below),
+   including the `--range` option so most of the development iteration
+   doesn't need a full safe-testing window.
+2. **Unified proxy** — merge `adb_hdmi/` and `direct_vms/` behind one
+   process/config/lineup (Architecture, below). Blocked on #1 by design,
+   not just sequencing — no point building the router against a guess
+   about which channels are clear.
+3. **Containers** — LXC and/or Docker packaging (Packaging / deployment,
+   below), plus the Quick start instructions that naturally go with
+   having something installable.
+
+Everything else in this file (the web viewer investigation, alerting,
+backup/recovery, auth, the M3U collection tag, the nightly drift check,
+the `channels_hdhr.csv` data-hygiene check, prod/devel config separation)
+is real and worth doing, but **not** blocking a release — fair game to
+land before or after, as time allows.
+
 ## Packaging / deployment
 
 - [ ] **LXC container.** A Proxmox LXC template/build script for deploying
@@ -45,6 +67,12 @@ is just the actionable list.
       **Run this only during a window when nobody else is watching TV** —
       it's hitting the same VMS endpoint that knocked a real viewer's
       stream offline during manual testing.
+      **Support a channel-range option** (e.g. `--range 551-560`), not
+      just whole-lineup-or-nothing. A small, known-mixed range (a few
+      channels that work, a few that don't) is enough to develop and
+      trust the classifier against, without needing a full safe-testing
+      window for every iteration -- saves the whole-lineup run for once
+      the script actually works.
 
 - [ ] **M3U-driven Fios+ channel collection tag (HIGH PRIORITY, per John).**
       Right now telling which channels in a client's guide are "ours"
