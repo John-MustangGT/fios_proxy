@@ -46,6 +46,26 @@ is just the actionable list.
       it's hitting the same VMS endpoint that knocked a real viewer's
       stream offline during manual testing.
 
+- [ ] **M3U-driven Fios+ channel collection tag (HIGH PRIORITY, per John).**
+      Right now telling which channels in a client's guide are "ours"
+      means recognizing them by number/name one at a time -- a real pain
+      in the FireTV app. Channels DVR's Channel Collections feature can
+      group channels into their own guide filter (alongside the built-in
+      Favorites/HD dropdown), and it supports genre-based "smart"
+      collections driven by the Custom Channels M3U extension tag
+      `tvc-guide-genres`. Plan: have `adb_hdmi/fios_proxy.py`'s `/m3u`
+      generator (and `direct_vms/dms_proxy.py`'s lineup, once it emits
+      similar metadata) tag every channel with something like
+      `tvc-guide-genres="Fios+"`, then build one genre-based "Fios+"
+      collection in the Channels DVR admin (one-time, manual -- there's
+      no way to auto-create the collection itself, only auto-populate its
+      membership via the tag). After that, every channel this project
+      serves shows up under its own "Fios+" filter automatically, no
+      per-channel picking. Do this alongside the autotune/channel-
+      capability probe script above -- same pass over the lineup, and the
+      probe's clear/DRM/error classification is a natural thing to fold
+      into the tag too (e.g. flagging DRM'd channels) once it exists.
+
 - [ ] **Confirm `channels_hdhr.csv` merge.** Data-hygiene loose end from
       `PROJECT_NOTES.md`'s "Immediate next steps": verify the
       HDHomeRun-PRIME-verified callsign corrections (Cowboy Channel/746,
