@@ -4,6 +4,15 @@ Single source of truth for decisions, confirmed facts, and deferred/future
 work on this project. Update this file as things change rather than letting
 decisions live only in chat history.
 
+**2026-09-23:** repo reorganized -- the ADB/HDMI-capture files
+(`fios_proxy.py`, `status.py`, `metrics.py`, `tuner_pool.py`,
+`fetch_stations.py`, `fios_tune.sh`, `lineup.json_example`,
+`fios_proxy.service`, `grafana/`) moved into `adb_hdmi/`; the
+direct-from-VMS files (`dms_proxy.py`, `pull_lineup.py`,
+`subscribed_channels.example.txt`, `dms-proxy.service`) moved into
+`direct_vms/`. Paths mentioned below predate that move and are relative
+to those new subdirectories now, not the repo root. See `README.md`.
+
 ## Goal
 
 Get Verizon Fios TV+ (Stream TV / "Stream TV Cloud" Android TV box) live

@@ -1,0 +1,25 @@
+[Unit]
+Description=Direct-from-VMS Channels DVR proxy (dms_proxy.py)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=kali
+Group=kali
+# This repo moved dms_proxy.py etc. out of the repo root and into
+# direct_vms/. Assumes the venv still lives at the repo root (shared with
+# adb_hdmi/, not duplicated per-proxy) -- adjust the venv path below if
+# yours lives somewhere else.
+WorkingDirectory=/root/Repo/fios_proxy/direct_vms
+ExecStart=/root/Repo/fios_proxy/venv/bin/python3 /root/Repo/fios_proxy/direct_vms/dms_proxy.py
+Restart=on-failure
+RestartSec=5
+
+# journalctl -u dms-proxy -f  to watch STREAM START/END lines live
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=dms-proxy
+
+[Install]
+WantedBy=multi-user.target
