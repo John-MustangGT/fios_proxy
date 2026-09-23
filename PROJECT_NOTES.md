@@ -339,7 +339,10 @@ no EPG-driven scheduling. Decision point: does Channels DVR stay the
 system-of-record for recordings (simpler, keeps existing DVR UI/apps), or
 does a new custom scheduler/indexer take over to use the ZowieBox's own
 recording path (which would make Channels DVR "just" a priority scheduler
-and index, per the original idea that sparked this fork)? Not decided.
+and index, per the original idea that sparked this fork)? Not decided. Worth resolving
+*before* spending on the basement rack/recorder hardware described above
+under "Hardware / purchasing decisions" -- that build's design assumes an
+answer to this question that hasn't actually been chosen yet.
 
 ## Sharing with the Channels DVR community (under consideration)
 
@@ -375,7 +378,10 @@ a second request for a channel already being served by an idle-adjacent
 tuner would attach to the existing stream instead of acquiring a new one.
 Not started; `TunerPool` today has no channel affinity at all (confirmed
 in the field test above — same channel on two tuners is the current,
-expected behavior).
+expected behavior). Natural companion
+to the unified-proxy work in `TODO.md` -- once there's one process
+brokering both pipelines' tuners, a session registry sitting above it is
+a smaller addition than bolting one onto two separate proxies would be.
 
 ## Direct-from-VMS streaming (investigated 2026-09-22 — real findings,
 not just theory anymore)

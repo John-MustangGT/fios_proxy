@@ -20,6 +20,13 @@ is just the actionable list.
       distinct from the README's fuller walkthrough and `PROJECT_NOTES.md`'s
       history — few enough steps to actually follow top-to-bottom without
       jumping around.
+- [ ] **Formalize prod/devel config separation.** JSA (production) and
+      Mirage (devel) currently rely on nobody mixing up which `lineup.json`/
+      `channels.json` belongs where — John's own words, "production/test
+      environment isn't as clean as it should be." A `deploy_env` field
+      checked at startup (or just clearly separated example configs) would
+      turn "accidentally ran devel config in prod" into a loud failure
+      instead of a quiet one.
 
 ## Tooling
 
@@ -38,6 +45,49 @@ is just the actionable list.
       **Run this only during a window when nobody else is watching TV** —
       it's hitting the same VMS endpoint that knocked a real viewer's
       stream offline during manual testing.
+
+- [ ] **Confirm `channels_hdhr.csv` merge.** Data-hygiene loose end from
+      `PROJECT_NOTES.md`'s "Immediate next steps": verify the
+      HDHomeRun-PRIME-verified callsign corrections (Cowboy Channel/746,
+      Big Ten Network/830) actually landed in the live `channels.csv`/
+      `lineup.json`, not just the standalone `channels_hdhr.csv`. Quick to
+      check, easy to forget.
+
+- [ ] **Nightly lineup drift check (systemd timer).** A systemd
+      timer that runs `pull_lineup.py` (or an equivalent VMS
+      ContentDirectory browse) once a night, diffs the result against
+      the checked-in/deployed `channels.json`, and reports anything
+      that changed -- channels added or removed, `item_id` values that
+      moved, name/number changes. Doesn't need to auto-apply anything;
+      just surface the diff (log line, or a small summary written
+      somewhere visible) so a VMS-side change doesn't silently break
+      streaming until someone notices a channel is gone. Natural
+      pairing with the autotune probe above once that exists -- same
+      "ask the VMS what it has today" step, just compared against
+      yesterday instead of turned into a classification.
+
+## Observability & security
+
+- [ ] **Alerting on top of `/metrics`.** The Grafana dashboard shows
+      state but nothing pages anyone. A handful of Prometheus/Alertmanager
+      rules — a tuner's ADB or encoder unreachable for N minutes, a burst
+      of `fios_proxy_tuner_stream_errors_total` — would close the loop
+      the dashboard opened: something should notice before a human does.
+- [ ] **Backup/recovery path for `lineup.json` / `channels.json`.** Both
+      are git-ignored on purpose (they hold real household IPs/paths), but
+      that also means there's no recovery path today if the `channels`
+      LXC's disk fails — nothing to restore from, just "rebuild it by
+      hand." At minimum, document the from-scratch regeneration steps
+      (`fetch_stations.py`/`pull_lineup.py`); ideally, an encrypted
+      off-box copy somewhere.
+- [ ] **Minimal auth on the proxy endpoints.** Fine today on a trusted
+      home LAN with no exposure. Gets sharper once the unified proxy (see
+      Architecture below) can trigger a live VMS `producer_id` request on
+      `/channel` — that's the exact request class that already knocked a
+      real viewer's stream offline once (see `PROJECT_NOTES.md`'s
+      "Direct-from-VMS streaming" section). An unauthenticated LAN
+      endpoint that can do that deserves more than "anyone on the LAN can
+      hit it."
 
 ## Architecture
 
