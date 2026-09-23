@@ -13,6 +13,20 @@ direct-from-VMS files (`dms_proxy.py`, `pull_lineup.py`,
 `direct_vms/`. Paths mentioned below predate that move and are relative
 to those new subdirectories now, not the repo root. See `README.md`.
 
+**2026-09-23 (deployment topology, per John):** the repo doesn't make this
+clear and should. Two separate Proxmox hosts -- **JSA is production,
+Mirage is devel.** The `direct_vms/dms_proxy.py` deployment on the `kali`
+box is **test-only**; production `dms_proxy.py` already runs colocated
+with `fios_proxy.py` and Channels DVR itself, in the same `channels` LXC.
+John's own words: "production/test environment isn't as clean as it should
+be" -- so treat anything below this note about *which* host is which as
+unconfirmed unless it's been rechecked, especially the "Confirmed working"
+section's mention of the `channels` LXC running on host Mirage (may now be
+stale if `channels` itself moved from Mirage to JSA at some point -- not
+verified). Still open: production's exact `dms_proxy.py` deploy path/user
+in `channels`, needed to fix `direct_vms/dms-proxy.service`, which
+currently documents the `kali` test config, not production's.
+
 ## Goal
 
 Get Verizon Fios TV+ (Stream TV / "Stream TV Cloud" Android TV box) live

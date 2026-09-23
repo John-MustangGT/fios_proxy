@@ -66,9 +66,15 @@ is just the actionable list.
         lineup needs one logical channel identity per channel — a fallback
         should never look like a *second*, different channel to Channels
         DVR or Plex.
-      - Open question, not yet decided: does unifying the code also mean
-        unifying the deployment host? `adb_hdmi/` runs on `channels`,
-        `direct_vms/` currently runs separately on the kali box. Both need
-        LAN reachability to the same Stream TV box IPs and the VMS, so
-        co-locating them is plausible, but that's a separate decision from
-        merging the code.
+      - Resolved: this was never actually an open deployment question,
+        just an unclear repo. `kali` only ever ran a *test* deployment of
+        `direct_vms/` -- production already runs `dms_proxy.py` colocated
+        with `fios_proxy.py`/Channels DVR in the `channels` LXC, same host,
+        today, with no code changes. Unifying the code doesn't need a
+        deployment-topology decision at all. What's still unclear (see the
+        dated note in `PROJECT_NOTES.md`): the checked-in `dms-proxy.service`
+        currently documents the `kali` *test* config
+        (`User=kali`, `WorkingDirectory=/root/Repo/fios_proxy`), not
+        production's actual path/user in the `channels` LXC -- needs fixing
+        once that's confirmed, probably as two separate service files
+        (test vs. prod) rather than one being silently wrong for the other.
