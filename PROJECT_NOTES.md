@@ -28,8 +28,9 @@ on `channels` confirmed -- `User=root`, `Group=root`,
 `WorkingDirectory=/root/Repo/fios_proxy` (pre-reorg path; now
 `/root/Repo/fios_proxy/direct_vms`), venv at the repo root
 (`/root/Repo/fios_proxy/venv`). `direct_vms/dms-proxy.service` now
-matches this; the `kali` test config is `direct_vms/dms-proxy.kali-test.service`,
-clearly labeled as non-production.
+matches this. No separate checked-in service file for `kali` -- per
+John, `kali` is just run by hand (`python3 dms_proxy.py`) for testing,
+not a systemd deployment.
 
 ## Goal
 

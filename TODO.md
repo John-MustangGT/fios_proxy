@@ -67,11 +67,11 @@ is just the actionable list.
         should never look like a *second*, different channel to Channels
         DVR or Plex.
       - Resolved: this was never actually an open deployment question,
-        just an unclear repo. `kali` only ever ran a *test* deployment of
-        `direct_vms/` -- production already runs `dms_proxy.py` colocated
-        with `fios_proxy.py`/Channels DVR in the `channels` LXC, same host,
-        today, with no code changes. Unifying the code doesn't need a
-        deployment-topology decision at all. `direct_vms/dms-proxy.service`
-        (production, runs as root) and `direct_vms/dms-proxy.kali-test.service`
-        (test, unprivileged user) are now both checked in and correctly
-        labeled -- see the dated note in `PROJECT_NOTES.md`.
+        just an unclear repo. `kali` is just run by hand for testing
+        (`python3 dms_proxy.py`, no systemd unit) -- production already
+        runs `dms_proxy.py` colocated with `fios_proxy.py`/Channels DVR in
+        the `channels` LXC, same host, today, with no code changes.
+        Unifying the code doesn't need a deployment-topology decision at
+        all. `direct_vms/dms-proxy.service` matches production's actual
+        config (`User=root`, confirmed from `channels`) -- see the dated
+        note in `PROJECT_NOTES.md`.

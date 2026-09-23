@@ -94,10 +94,9 @@ thoroughly as the ADB/HDMI pipeline has.
      `fetch_stations.py` for the other pipeline.
 2. Run `python3 dms_proxy.py`, or install `dms-proxy.service` with
    systemd to run as root (edit its `WorkingDirectory`/`ExecStart` first
-   if you deploy somewhere other than `/root/Repo/fios_proxy`).
-   `dms-proxy.kali-test.service` is a second, clearly-labeled variant for
-   a non-production test deployment (same paths, runs as an unprivileged
-   user instead) -- not something most people need.
+   if you deploy somewhere other than `/root/Repo/fios_proxy`). For quick
+   testing (no systemd), just run `python3 dms_proxy.py` by hand from
+   `direct_vms/`.
 3. In Channels DVR: Settings → Add Source → HDHomeRun → enter this
    host's IP. (Not a Custom Channel/M3U source — `dms_proxy.py` emulates
    an HDHomeRun's own discovery/lineup API.)
@@ -128,7 +127,6 @@ fios_proxy/
 | `direct_vms/pull_lineup.py` | Builds `channels.json` for `dms_proxy.py` from the VMS's ContentDirectory |
 | `direct_vms/subscribed_channels.example.txt` | Template for `pull_lineup.py --subscribed-file` |
 | `direct_vms/dms-proxy.service` | systemd unit for `dms_proxy.py` (production: runs as root) |
-| `direct_vms/dms-proxy.kali-test.service` | Same, for a non-production test deployment (runs as an unprivileged user) |
 | `PROJECT_NOTES.md` | Full project history: decisions, hardware research, investigation findings, open items |
 
 `lineup.json` (under `adb_hdmi/`) and `channels.json`/
