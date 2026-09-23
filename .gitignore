@@ -219,3 +219,5 @@ __marimo__/
 
 # local files
 lineup.json
+lineup.json_current
+channels.json
