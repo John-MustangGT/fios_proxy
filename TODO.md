@@ -66,6 +66,21 @@ is just the actionable list.
       probe's clear/DRM/error classification is a natural thing to fold
       into the tag too (e.g. flagging DRM'd channels) once it exists.
 
+- [ ] **Figure out why the Channels DVR web viewer doesn't like our
+      streams.** Native apps (FireTV, etc.) play channels from this
+      project fine; the browser-based web viewer apparently doesn't.
+      Root cause not yet investigated -- next time it happens, capture
+      specifics (which proxy/channel, which browser, what the player
+      actually shows -- black screen vs. error vs. audio-only vs. stalls)
+      so there's something to debug against instead of guessing. Worth
+      checking first, based on what's already been run into elsewhere in
+      this project: the RTSP audio LATM-vs-ADTS framing gotcha documented
+      under `adb_hdmi/fios_proxy.py`'s ffmpeg invocation (a web player may
+      be less forgiving of a mux quirk than a native app's decoder), and
+      whether the stream's PAT/PMT or continuity counters hold up over a
+      long-running `pipe:1` the way a native player's buffering tolerates
+      but a browser's MSE pipeline may not.
+
 - [ ] **Confirm `channels_hdhr.csv` merge.** Data-hygiene loose end from
       `PROJECT_NOTES.md`'s "Immediate next steps": verify the
       HDHomeRun-PRIME-verified callsign corrections (Cowboy Channel/746,
