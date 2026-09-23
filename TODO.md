@@ -71,10 +71,7 @@ is just the actionable list.
         `direct_vms/` -- production already runs `dms_proxy.py` colocated
         with `fios_proxy.py`/Channels DVR in the `channels` LXC, same host,
         today, with no code changes. Unifying the code doesn't need a
-        deployment-topology decision at all. What's still unclear (see the
-        dated note in `PROJECT_NOTES.md`): the checked-in `dms-proxy.service`
-        currently documents the `kali` *test* config
-        (`User=kali`, `WorkingDirectory=/root/Repo/fios_proxy`), not
-        production's actual path/user in the `channels` LXC -- needs fixing
-        once that's confirmed, probably as two separate service files
-        (test vs. prod) rather than one being silently wrong for the other.
+        deployment-topology decision at all. `direct_vms/dms-proxy.service`
+        (production, runs as root) and `direct_vms/dms-proxy.kali-test.service`
+        (test, unprivileged user) are now both checked in and correctly
+        labeled -- see the dated note in `PROJECT_NOTES.md`.

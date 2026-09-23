@@ -23,9 +23,13 @@ be" -- so treat anything below this note about *which* host is which as
 unconfirmed unless it's been rechecked, especially the "Confirmed working"
 section's mention of the `channels` LXC running on host Mirage (may now be
 stale if `channels` itself moved from Mirage to JSA at some point -- not
-verified). Still open: production's exact `dms_proxy.py` deploy path/user
-in `channels`, needed to fix `direct_vms/dms-proxy.service`, which
-currently documents the `kali` test config, not production's.
+verified). **Resolved same day:** production's `/etc/systemd/system/dms-proxy.service`
+on `channels` confirmed -- `User=root`, `Group=root`,
+`WorkingDirectory=/root/Repo/fios_proxy` (pre-reorg path; now
+`/root/Repo/fios_proxy/direct_vms`), venv at the repo root
+(`/root/Repo/fios_proxy/venv`). `direct_vms/dms-proxy.service` now
+matches this; the `kali` test config is `direct_vms/dms-proxy.kali-test.service`,
+clearly labeled as non-production.
 
 ## Goal
 
