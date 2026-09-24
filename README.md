@@ -89,9 +89,20 @@ thoroughly as the ADB/HDMI pipeline has.
      fill in your actual package) marks everything else `enabled: false`,
      so channels outside your subscription never show up in the guide or
      become streamable.
-   - `--cdvr-host <channels-dvr-ip>` matches each enabled channel against
-     Channels DVR's Gracenote/TMS station database, same idea as
-     `fetch_stations.py` for the other pipeline.
+   - `--hints-file ../station_hints.csv` pins Gracenote `station_id`s from a
+     known-good, human-verified `number,name,station_id` CSV (the repo
+     root's [`station_hints.csv`](station_hints.csv) is seeded from a
+     confirmed-correct real lineup) -- checked first and always wins over
+     the TMS search below. Wrong guesses turned out to be common enough on
+     anything past an exact callsign match that auto-trusting a fuzzy
+     search result isn't worth it -- see `PROJECT_NOTES.md`.
+   - `--cdvr-host <channels-dvr-ip>` matches whatever's left after hints
+     against Channels DVR's Gracenote/TMS station database. Only a
+     confident exact-callsign or HD-suffix match gets auto-applied;
+     anything murkier is left as `match_method: "needs_review"` (with the
+     top search hit saved in `review_candidate`, not auto-trusted) --
+     confirm it by hand, then add it to your hints file so future runs
+     skip the guesswork for that channel.
 2. Run `python3 dms_proxy.py`, or install `dms-proxy.service` with
    systemd to run as root (edit its `WorkingDirectory`/`ExecStart` first
    if you deploy somewhere other than `/root/Repo/fios_proxy`). For quick
@@ -107,6 +118,7 @@ thoroughly as the ADB/HDMI pipeline has.
 fios_proxy/
 ├── adb_hdmi/     # proven pipeline: ADB tune + HDMI-encoder capture
 ├── direct_vms/   # experimental pipeline: straight off the VMS, no hardware
+├── station_hints.csv
 ├── README.md
 ├── PROJECT_NOTES.md
 └── LICENSE
@@ -118,7 +130,7 @@ fios_proxy/
 | `adb_hdmi/status.py` | `/status` debug dashboard + shared tuner state, wired into `fios_proxy.py` |
 | `adb_hdmi/metrics.py` | `/metrics` Prometheus endpoint, wired into `fios_proxy.py` |
 | `adb_hdmi/tuner_pool.py` | Hands out idle tuners for `fios_proxy.py`'s multi-tuner pool |
-| `adb_hdmi/fetch_stations.py` | Looks up Gracenote station IDs for `lineup.json` channels |
+| `adb_hdmi/fetch_stations.py` | **Currently mismatched with its own docstring** -- it's actually just a copy of the VMS ContentDirectory browser, not a Gracenote/TMS lookup. See `PROJECT_NOTES.md`'s 2026-09-24 note; whatever built `lineup.json_example`'s real `stationId`s wasn't this file, and isn't in the repo. |
 | `adb_hdmi/fios_tune.sh` | Standalone ADB tune/discover CLI, independent of the Flask app |
 | `adb_hdmi/lineup.json_example` | Template for `fios_proxy.py`'s config (copy to `lineup.json`) |
 | `adb_hdmi/fios_proxy.service` | systemd unit for `fios_proxy.py` |
@@ -127,6 +139,7 @@ fios_proxy/
 | `direct_vms/pull_lineup.py` | Builds `channels.json` for `dms_proxy.py` from the VMS's ContentDirectory |
 | `direct_vms/subscribed_channels.example.txt` | Template for `pull_lineup.py --subscribed-file` |
 | `direct_vms/dms-proxy.service` | systemd unit for `dms_proxy.py` (production: runs as root) |
+| `station_hints.csv` | Human-verified `number,name,station_id` pins, shared across proxies -- feed to `pull_lineup.py --hints-file` |
 | `PROJECT_NOTES.md` | Full project history: decisions, hardware research, investigation findings, open items |
 
 `lineup.json` (under `adb_hdmi/`) and `channels.json`/

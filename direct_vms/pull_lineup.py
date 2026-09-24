@@ -10,15 +10,32 @@ writes channels.json:
     "item_id": str,
     "enabled": bool,       # from --subscribed-file; True for all if omitted
     "station_id": str|null,
-    "match_method": str|null}, ...]
+    "match_method": str|null,     # hint_pin | exact_callsign | hd_suffix_guess |
+                                   # needs_review | no_results | search_failed | null
+    "review_candidate": str}, ...]  # only present for match_method == "needs_review":
+                                     # top TMS search hit, NOT auto-applied -- confirm
+                                     # it by hand, then promote it into a hints file
+                                     # (see --hints-file / station_hints.csv) rather
+                                     # than trusting it blind
 
 The VMS hands back its ENTIRE possible lineup regardless of what you're
 actually subscribed to -- --subscribed-file gates that down to just your
-package, and station-ID matching (like the original ADB/HDMI pipeline's
-fetch_stations.py) only runs against enabled channels, so we're not
-spamming Channels DVR's TMS search for channels you can't even watch.
+package, and station-ID matching only runs against enabled channels, so
+we're not spamming Channels DVR's TMS search for channels you can't even
+watch.
+
+--hints-file (a small number,name,station_id CSV -- see station_hints.csv
+at the repo root) is checked before any TMS search and always wins: it's
+for channels you (or another proxy pulling the same real Fios lineup)
+have already manually confirmed. TMS search only auto-applies a match for
+the confident tiers (exact_callsign, hd_suffix_guess); anything murkier is
+left as match_method "needs_review" with the top hit surfaced separately
+in review_candidate, not silently written as the answer -- confirm it by
+hand, then add it to your hints file so future runs skip the guesswork
+for that channel entirely.
 """
 import argparse
+import csv
 import html
 import json
 import re
@@ -27,6 +44,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+from collections import Counter
 
 DIDL_NS = {
     "didl": "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/",
@@ -103,6 +121,41 @@ def load_subscribed(path):
     return numbers
 
 
+# ---------------------------------------------------------------- manual hints file
+
+def load_hints(path):
+    """number,name,station_id CSV -> {vms_number: {"name":..., "station_id":...}}.
+    See station_hints.csv at the repo root. Human-verified, so these always
+    win over anything TMS search comes back with."""
+    hints = {}
+    with open(path, newline="") as f:
+        for row in csv.DictReader(f):
+            try:
+                number = int(row["number"])
+            except (KeyError, TypeError, ValueError):
+                print(f"[!] Skipping unparsable row in {path!r}: {row!r}", file=sys.stderr)
+                continue
+            station_id = (row.get("station_id") or "").strip()
+            if not station_id:
+                continue
+            hints[number] = {"name": (row.get("name") or "").strip(), "station_id": station_id}
+    return hints
+
+
+def apply_hints(channels, hints):
+    matched = 0
+    for c in channels:
+        if not c["enabled"]:
+            continue
+        hint = hints.get(c["vms_number"])
+        if not hint:
+            continue
+        c["station_id"] = hint["station_id"]
+        c["match_method"] = "hint_pin"
+        matched += 1
+    print(f"[*] {matched} channel(s) matched from hints file", file=sys.stderr)
+
+
 # ---------------------------------------------------------------- Channels DVR TMS station matching
 
 def clean_name(name):
@@ -130,23 +183,32 @@ def query_tms(cdvr_host, cdvr_port, phrase):
 
 
 def best_match(name, results):
+    """Returns (station_id, match_method, review_candidate).
+
+    Only exact_callsign and hd_suffix_guess are confident enough to
+    auto-assign a station_id. Anything murkier used to fall through to
+    "first_result_guess" -- just taking TMS's top hit for a loose,
+    unquoted keyword search -- which in practice was wrong often enough
+    that it's not worth trusting automatically (see PROJECT_NOTES.md).
+    That candidate is still surfaced, as review_candidate, so a human can
+    confirm it -- just not auto-applied."""
     if not results:
-        return None, "no_results"
+        return None, "no_results", None
     target = normalize(clean_name(name))
     for r in results:
         if normalize(r.get("callSign", "")) == target:
-            return r.get("stationId"), "exact_callsign"
+            return r.get("stationId"), "exact_callsign", None
     for r in results:
         cs = normalize(r.get("callSign", ""))
         if cs == target + "hd" or (cs.endswith("hd") and cs[:-2] == target):
-            return r.get("stationId"), "hd_suffix_guess"
-    return results[0].get("stationId"), "first_result_guess"
+            return r.get("stationId"), "hd_suffix_guess", None
+    return None, "needs_review", results[0].get("stationId")
 
 
 def match_stations(channels, cdvr_host, cdvr_port):
     for c in channels:
-        if not c["enabled"]:
-            continue
+        if not c["enabled"] or c.get("station_id"):
+            continue  # already pinned via --hints-file -- never overwrite that
         print(f"[*] TMS search: {c['name']!r} (ch {c['number']}) ...", file=sys.stderr)
         try:
             results = query_tms(cdvr_host, cdvr_port, c["name"])
@@ -154,9 +216,11 @@ def match_stations(channels, cdvr_host, cdvr_port):
             print(f"[!] TMS search failed for {c['name']!r}: {e}", file=sys.stderr)
             c["station_id"], c["match_method"] = None, "search_failed"
             continue
-        station_id, method = best_match(c["name"], results)
+        station_id, method, review_candidate = best_match(c["name"], results)
         c["station_id"], c["match_method"] = station_id, method
-        if method in ("first_result_guess", "no_results", "search_failed"):
+        if review_candidate:
+            c["review_candidate"] = review_candidate
+        if method in ("needs_review", "no_results", "search_failed"):
             print(f"    [!] {method} -- review this one manually", file=sys.stderr)
 
 
@@ -179,6 +243,12 @@ def main():
         help="Text file of VMS/real channel numbers you're actually subscribed to, "
              "one per line ('#' starts a comment). Channels not listed get "
              "enabled=false. Omit to leave everything enabled=true.",
+    )
+    ap.add_argument(
+        "--hints-file", default=None,
+        help="CSV of number,name,station_id manual overrides (see station_hints.csv "
+             "at the repo root). Checked before TMS search and always wins -- for "
+             "channels you've already confirmed by hand. Omit to skip.",
     )
     ap.add_argument(
         "--cdvr-host", default=None,
@@ -232,10 +302,20 @@ def main():
     enabled_count = sum(1 for c in channels if c["enabled"])
     print(f"[*] Total channels: {len(channels)} ({enabled_count} enabled)", file=sys.stderr)
 
+    if args.hints_file:
+        hints = load_hints(args.hints_file)
+        print(f"[*] Loaded {len(hints)} hint(s) from {args.hints_file}", file=sys.stderr)
+        apply_hints(channels, hints)
+    else:
+        print("[*] No --hints-file given -- skipping manual overrides", file=sys.stderr)
+
     if args.cdvr_host:
         match_stations(channels, args.cdvr_host, args.cdvr_port)
     else:
         print("[*] No --cdvr-host given -- skipping station-ID matching", file=sys.stderr)
+
+    tally = Counter(c["match_method"] for c in channels if c["enabled"])
+    print(f"[*] Match method tally: {dict(tally)}", file=sys.stderr)
 
     with open(args.out, "w") as f:
         json.dump(channels, f, indent=2)

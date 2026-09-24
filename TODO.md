@@ -22,9 +22,8 @@ its own section below, this is just the sequencing:
 
 Everything else in this file (the web viewer investigation, alerting,
 backup/recovery, auth, the M3U collection tag, the nightly drift check,
-the `channels_hdhr.csv` data-hygiene check, prod/devel config separation)
-is real and worth doing, but **not** blocking a release — fair game to
-land before or after, as time allows.
+prod/devel config separation) is real and worth doing, but **not**
+blocking a release — fair game to land before or after, as time allows.
 
 ## Packaging / deployment
 
@@ -109,12 +108,12 @@ land before or after, as time allows.
       long-running `pipe:1` the way a native player's buffering tolerates
       but a browser's MSE pipeline may not.
 
-- [ ] **Confirm `channels_hdhr.csv` merge.** Data-hygiene loose end from
-      `PROJECT_NOTES.md`'s "Immediate next steps": verify the
-      HDHomeRun-PRIME-verified callsign corrections (Cowboy Channel/746,
-      Big Ten Network/830) actually landed in the live `channels.csv`/
-      `lineup.json`, not just the standalone `channels_hdhr.csv`. Quick to
-      check, easy to forget.
+- [x] **Confirm `channels_hdhr.csv` merge.** Resolved 2026-09-24, as a
+      side effect of fixing `direct_vms/pull_lineup.py`'s station-ID
+      guessing (see `PROJECT_NOTES.md`): the 117-channel confirmed-correct
+      list is now checked in as `station_hints.csv` at the repo root and
+      wired up via `--hints-file`, including both Cowboy Channel/746 and
+      Big Ten Network/830. No longer just sitting unmerged.
 
 - [ ] **Nightly lineup drift check (systemd timer).** A systemd
       timer that runs `pull_lineup.py` (or an equivalent VMS

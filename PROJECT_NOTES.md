@@ -32,6 +32,40 @@ matches this. No separate checked-in service file for `kali` -- per
 John, `kali` is just run by hand (`python3 dms_proxy.py`) for testing,
 not a systemd deployment.
 
+**2026-09-24 (direct_vms station matching, per John):** John reported that
+in `direct_vms/channels.json`, every match past `exact_callsign` was
+wrong. Root cause: `pull_lineup.py`'s third matching tier,
+`first_result_guess`, auto-wrote TMS's top search hit as the answer
+whenever the first two (confident) tiers didn't hit -- and that search is
+intentionally unquoted/broad for recall, so "top hit" was often just
+whatever ranked highest for a loose keyword match, not the right channel.
+Fixed: that tier no longer auto-writes anything. It's now `needs_review`
+-- the candidate is still surfaced (`review_candidate` field) for a human
+to check, never auto-trusted. See `pull_lineup.py`'s `best_match()`.
+
+Also added `--hints-file`: a `number,name,station_id` CSV, checked before
+any TMS search and always wins. `station_hints.csv` at the repo root is
+seeded from a 117-channel list John provided of already-confirmed
+`adb_hdmi` lineup entries -- this is very likely the same list
+"Immediate next steps" below calls `channels_hdhr.csv` (same row count,
+same HDHomeRun-PRIME-verified provenance), which resolves that open item:
+it's now checked in and wired up, not just sitting unmerged.
+
+**Related discovery, while tracing where adb_hdmi's Gracenote matching
+actually happened:** the "94/94 matched" result described below under
+"Full channel lineup with real Gracenote `stationId`s" was built by
+`fetch_stations.py` + `build_lineup.py`, per that section's own
+description (exact-callsign first, then HD-suffix heuristic, then flag
+anything murkier for manual review -- the same two-confident-tiers
+approach `pull_lineup.py` now matches). But `build_lineup.py` does not
+exist anywhere in this repo's git history, and the `adb_hdmi/fetch_stations.py`
+that IS checked in doesn't do TMS/Gracenote lookups at all -- it's just a
+near-duplicate of the VMS ContentDirectory browser (the same code
+`direct_vms/pull_lineup.py`'s `browse()` has). Whatever produced
+`lineup.json_example`'s real `stationId`s is not present in this repo.
+Not fixing that now -- flagging it so nobody goes looking for a matcher
+in `fetch_stations.py` and wonders why it's not there.
+
 ## Goal
 
 Get Verizon Fios TV+ (Stream TV / "Stream TV Cloud" Android TV box) live
