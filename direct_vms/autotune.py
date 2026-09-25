@@ -203,8 +203,15 @@ def probe_with_ffprobe(path):
     s = streams[0]
     codec = s.get("codec_name", "?")
     w, h = s.get("width"), s.get("height")
-    detail = f"{codec} {w}x{h}" if w and h else codec
-    return True, detail
+    if not (w and h):
+        # A codec_name with no real dimensions turned out, in the field, to
+        # correlate with channels not actually in the subscription (John's
+        # 2026-09-25 finding: unsubscribed 668/DestAm HD came back exactly
+        # this way -- "clear: mpeg2video" with no resolution -- while every
+        # legitimately-tunable neighbor channel had one). Treat it the same
+        # as no video found rather than trusting a bare codec name.
+        return False, f"{codec} stream detected but no resolution -- likely blocked/unsubscribed"
+    return True, f"{codec} {w}x{h}"
 
 
 def classify_channel(vms_ip, vms_port, chan, duration, max_bytes, timeout):

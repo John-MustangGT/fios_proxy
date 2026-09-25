@@ -66,6 +66,28 @@ near-duplicate of the VMS ContentDirectory browser (the same code
 Not fixing that now -- flagging it so nobody goes looking for a matcher
 in `fetch_stations.py` and wonders why it's not there.
 
+**2026-09-25 (autotune.py, per John's field observation):** while running
+`direct_vms/autotune.py --all` across the lineup looking for patterns,
+John spotted that channels he's confirmed he's NOT subscribed to (e.g.
+668/DestAm HD) come back `clear: mpeg2video` but with no resolution
+printed -- every legitimately-tunable neighbor channel got a real
+`WIDTHxHEIGHT`. That's a real gap in the classifier: `probe_with_ffprobe()`
+was treating any non-empty ffprobe `streams` list as "has video," even
+when `width`/`height` never came back -- so an unsubscribed channel's
+degraded/incomplete response could still score `clear`, exactly the kind
+of false positive the whole script exists to catch (same category as the
+original 14-junk-bytes `producer_id` collision, just a subtler variant).
+Fixed: a detected codec with no real dimensions is now treated the same
+as no video found (`drm_or_blocked`), not auto-trusted. Also separately
+confirmed unrelated to this: channel 553/FX plays fine on both the real
+Stream TV box and `direct_vms`'s raw probe, but stalls on a Fire TV Stick
+running the official Fios app (buffers, shows one frame, never advances)
+-- looks like a Fire TV Stick/app decoder compatibility issue specific to
+that device, not something in this repo's code; noted here in case a
+pattern shows up later, not acted on further for now. Channels are also
+confirmed to vary in codec (`mpeg2video` on several, `h264` in the
+original Sept 22 packet capture) -- not one codec lineup-wide.
+
 ## Goal
 
 Get Verizon Fios TV+ (Stream TV / "Stream TV Cloud" Android TV box) live
