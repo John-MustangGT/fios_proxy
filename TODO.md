@@ -73,6 +73,22 @@ blocking a release — fair game to land before or after, as time allows.
       window for every iteration -- saves the whole-lineup run for once
       the script actually works.
 
+- [ ] **Auto-derive `--subscribed-file` from `channel_status.json`.**
+      Confirmed 2026-09-25: `autotune.py`'s "clear with no resolution"
+      result isn't just a good guess at "not subscribed" -- it's a real,
+      live, VMS-side subscription check. A channel John already knew he
+      wasn't subscribed to (622/Science HD) scored exactly that way, and
+      the real Stream TV box's own on-screen message ("Unsubscribed
+      channel -- You are not subscribed to Science HD (622)") confirmed
+      it independently. Right now `pull_lineup.py --subscribed-file`
+      still expects a hand-typed list of channel numbers. Once a full
+      `--all` autotune run exists, a small script (or a flag on
+      `pull_lineup.py` itself) could read `channel_status.json` and treat
+      "clear with a resolution" as subscribed, "clear with no resolution"
+      as not -- no more hand-maintaining that file. Worth doing after the
+      rescan with the fixed classifier confirms the pattern holds across
+      the whole lineup, not just the range checked so far.
+
 - [ ] **M3U-driven Fios+ channel collection tag (HIGH PRIORITY, per John).**
       Right now telling which channels in a client's guide are "ours"
       means recognizing them by number/name one at a time -- a real pain

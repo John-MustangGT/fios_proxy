@@ -88,6 +88,29 @@ pattern shows up later, not acted on further for now. Channels are also
 confirmed to vary in codec (`mpeg2video` on several, `h264` in the
 original Sept 22 packet capture) -- not one codec lineup-wide.
 
+**Same day, follow-up -- pattern confirmed, and confirmed against real
+ground truth:** John ran a full `--all` scan before the fix above had
+been pulled into his working copy. Cross-referencing that run's
+`channel_status.json` against `station_hints.csv`: 26 of 120 probed
+channels came back `clear` with no resolution, and 25 of those 26 were
+channels not present in `station_hints.csv` at all. The one apparent
+exception -- 622/Science Channel, which *is* in `station_hints.csv` --
+turned out not to be an exception: the real Stream TV box's own ZowieBox
+capture feed shows Verizon's own on-screen message for that channel,
+"Unsubscribed channel -- You are not subscribed to Science HD (622)."
+So the pattern is actually 26/26, not 25/26. `station_hints.csv` having
+an entry for 622 isn't wrong, it's just answering a different question
+than it looks like -- that file only pins the correct Gracenote
+`station_id` for a channel number/name, it was never a subscription
+list (that's `--subscribed-file`'s job, which has never been populated
+from real, verified data).
+
+This means the no-resolution signal in `direct_vms/autotune.py` is a
+validated, live, VMS-side subscription check, confirmed against the
+app's own ground truth -- not just a strong correlation. See the new
+TODO.md item about deriving `--subscribed-file`'s content from
+`channel_status.json` automatically instead of hand-maintaining it.
+
 ## Goal
 
 Get Verizon Fios TV+ (Stream TV / "Stream TV Cloud" Android TV box) live
